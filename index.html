@@ -982,6 +982,15 @@ function buildLeasesSection(n) {
   </div>` + secClose();
 }
 
+function buildBonusSection(n, title, details) {
+  if (!title && !details) return "";
+  return secOpen(n, "Bonus Offering &amp; Offer Terms", "Custom incentive specific to this offer") + `
+  <div class="bonus-block">
+    ${title ? `<div class="bonus-title">${title}</div>` : ""}
+    ${details ? `<div class="bonus-details">${details.replace(/\n/g, "<br>")}</div>` : ""}
+  </div>` + secClose();
+}
+
 function buildMiscSection(n) {
   return secOpen(n, "Miscellaneous Terms", "Additional policies &amp; what you will not pay at MODUS") + `
   <div class="misc-grid">
