@@ -788,6 +788,24 @@ function handleScheduleChange() {
 // Upload state
 const uploadData = { headshot: null, teambrand: null };
 
+function removeWhiteBg(dataUrl, callback) {
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const d = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < d.data.length; i += 4) {
+      const r = d.data[i], g = d.data[i+1], b = d.data[i+2];
+      if (r > 220 && g > 220 && b > 220) d.data[i+3] = 0;
+    }
+    ctx.putImageData(d, 0, 0);
+    callback(canvas.toDataURL('image/png'));
+  };
+  img.src = dataUrl;
+}
+
 function handleUpload(inputId, zoneId, previewImgId, previewNameId) {
   const input = document.getElementById(inputId);
   const file = input.files[0];
@@ -795,16 +813,22 @@ function handleUpload(inputId, zoneId, previewImgId, previewNameId) {
   const key = inputId === 'f-headshot' ? 'headshot' : 'teambrand';
   const reader = new FileReader();
   reader.onload = function(e) {
-    uploadData[key] = e.target.result;
-    const zone = document.getElementById(zoneId);
-    zone.classList.add('has-file');
-    const img = document.getElementById(previewImgId);
-    img.src = e.target.result;
-    // Style headshot preview as circle
-    if (key === 'headshot') {
-      img.style.cssText = 'width:60px;height:60px;border-radius:50%;object-fit:cover;object-position:center top;';
+        const processResult = (result) => {
+      uploadData[key] = result;
+      const zone = document.getElementById(zoneId);
+      zone.classList.add('has-file');
+      const img = document.getElementById(previewImgId);
+      img.src = result;
+      if (key === 'headshot') {
+        img.style.cssText = 'width:60px;height:60px;border-radius:50%;object-fit:cover;object-position:center top;';
+      }
+      document.getElementById(previewNameId).textContent = file.name.length > 28 ? file.name.substring(0,26)+'…' : file.name;
+    };
+    if (key === 'teambrand') {
+      removeWhiteBg(e.target.result, processResult);
+    } else {
+      processResult(e.target.result);
     }
-    document.getElementById(previewNameId).textContent = file.name.length > 28 ? file.name.substring(0,26)+'…' : file.name;
   };
   reader.readAsDataURL(file);
 }
