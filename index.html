@@ -494,6 +494,175 @@
     #doc-view .doc-toolbar { display: none; }
     @page { size: letter; margin: 0; }
   }
+
+  /* ── CUSTOM OFFER FIELDS ── */
+  #custom-fields { display: none; }
+  #custom-fields.visible { display: block; }
+  .custom-ai-note {
+    background: var(--black);
+    color: var(--white);
+    padding: 0.14in 0.18in;
+    margin-bottom: 0.16in;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.12in;
+  }
+  .custom-ai-note .cn-icon { font-size: 14pt; flex-shrink: 0; }
+  .custom-ai-note .cn-text { font-size: 7.5pt; font-weight: 300; line-height: 1.6; }
+  .custom-ai-note .cn-text strong { font-weight: 700; display: block; margin-bottom: 3px; font-size: 8pt; letter-spacing: 0.08em; }
+  .custom-file-zone {
+    border: 1.5px dashed var(--light-grey);
+    padding: 0.2in;
+    background: var(--near-white);
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 0.12in;
+    transition: border-color 0.15s;
+  }
+  .custom-file-zone:hover { border-color: var(--black); }
+  .custom-file-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .custom-file-zone .cfz-icon { font-size: 20pt; line-height: 1; margin-bottom: 6px; }
+  .custom-file-zone .cfz-label { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--black); margin-bottom: 3px; }
+  .custom-file-zone .cfz-sub { font-size: 7pt; font-weight: 300; color: var(--black); }
+  .custom-file-list { list-style: none; margin-bottom: 0.12in; }
+  .custom-file-list li {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.06in 0.12in;
+    background: var(--white);
+    border: 1px solid var(--light-grey);
+    border-bottom: none;
+    font-size: 7.5pt;
+  }
+  .custom-file-list li:last-child { border-bottom: 1px solid var(--light-grey); }
+  .custom-file-list li .cfl-name { font-weight: 500; color: var(--black); }
+  .custom-file-list li .cfl-size { font-weight: 300; color: var(--black); margin-left: 8px; }
+  .custom-file-list li .cfl-remove { cursor: pointer; color: var(--black); font-size: 9pt; background: none; border: none; padding: 0 4px; font-weight: 700; }
+
+  /* ── LOADING STATE ── */
+  .generating-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; display: none;
+  }
+  .generating-overlay.active { display: flex; }
+  .gen-logo { font-size: 28pt; font-weight: 300; letter-spacing: 0.3em; color: var(--white); margin-bottom: 0.2in; }
+  .gen-logo span { font-size: 9pt; display: block; letter-spacing: 0.4em; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .gen-status { font-size: 8.5pt; font-weight: 300; letter-spacing: 0.1em; color: rgba(255,255,255,0.7); margin-bottom: 0.16in; }
+  .gen-bar { width: 260px; height: 2px; background: rgba(255,255,255,0.15); position: relative; overflow: hidden; }
+  .gen-bar::after { content: ''; position: absolute; left: -60%; width: 60%; height: 100%; background: var(--white); animation: genslide 1.4s ease-in-out infinite; }
+  @keyframes genslide { 0% { left: -60%; } 100% { left: 110%; } }
+
+  /* ── AI CHAT BUBBLE ── */
+  #ai-chat-bubble {
+    position: fixed; bottom: 28px; right: 28px; z-index: 8888;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+  }
+  #ai-chat-panel {
+    width: 360px; max-height: 540px;
+    background: var(--white);
+    border: 1px solid var(--light-grey);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    display: none; flex-direction: column; overflow: hidden;
+  }
+  #ai-chat-panel.open { display: flex; }
+  .acp-header {
+    background: var(--black);
+    padding: 0.12in 0.16in;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .acp-header .acp-title { font-size: 8pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--white); }
+  .acp-header .acp-sub { font-size: 6.5pt; font-weight: 300; color: rgba(255,255,255,0.55); margin-top: 2px; }
+  .acp-header .acp-close { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 14pt; line-height: 1; padding: 0; }
+  .acp-header .acp-close:hover { color: var(--white); }
+  .acp-messages {
+    flex: 1; overflow-y: auto; padding: 0.14in;
+    display: flex; flex-direction: column; gap: 0.1in;
+    min-height: 200px;
+  }
+  .acp-msg {
+    max-width: 88%; padding: 0.09in 0.13in;
+    font-size: 8pt; font-weight: 300; line-height: 1.6;
+  }
+  .acp-msg.user { background: var(--black); color: var(--white); align-self: flex-end; }
+  .acp-msg.assistant { background: var(--near-white); color: var(--black); align-self: flex-start; border: 1px solid var(--light-grey); }
+  .acp-msg.thinking { background: var(--near-white); color: var(--black); align-self: flex-start; border: 1px solid var(--light-grey); font-style: italic; opacity: 0.7; }
+  .acp-input-row {
+    display: flex; gap: 0; flex-shrink: 0;
+    border-top: 1px solid var(--light-grey);
+  }
+  .acp-input-row textarea {
+    flex: 1; border: none; outline: none; resize: none;
+    padding: 0.1in 0.12in;
+    font-family: "Poppins", sans-serif; font-size: 7.5pt; font-weight: 300;
+    color: var(--black); background: var(--white);
+    min-height: 44px; max-height: 120px;
+    line-height: 1.5;
+  }
+  .acp-input-row .acp-send {
+    background: var(--black); color: var(--white); border: none;
+    width: 44px; cursor: pointer; font-size: 12pt; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .acp-input-row .acp-send:hover { background: var(--dark-grey); }
+  .acp-input-row .acp-send:disabled { opacity: 0.4; cursor: not-allowed; }
+  #ai-chat-btn {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--black); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+    font-size: 20pt; color: var(--white);
+    transition: transform 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+  #ai-chat-btn:hover { background: var(--dark-grey); transform: scale(1.06); }
+  .acp-context-bar {
+    font-size: 6.5pt; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--black);
+    padding: 5px 0.14in; border-bottom: 1px solid var(--light-grey);
+    background: var(--near-white); flex-shrink: 0;
+  }
+  /* Custom offer rendered section */
+  .custom-section-block {
+    border: 1px solid var(--light-grey);
+    margin-bottom: 0.14in;
+    overflow: hidden;
+  }
+  .custom-section-block .csb-head {
+    background: var(--black); padding: 0.12in 0.18in;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .custom-section-block .csb-head .csb-title {
+    font-size: 9pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--white);
+  }
+  .custom-section-block .csb-head .csb-tag {
+    font-size: 6.5pt; color: var(--white); opacity: 0.6; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .custom-section-block .csb-body {
+    padding: 0.16in 0.18in;
+  }
+  .custom-section-block .csb-body ul { list-style: none; }
+  .custom-section-block .csb-body ul li {
+    font-size: 7.5pt; font-weight: 300; color: var(--black);
+    padding: 0.025in 0 0.025in 0.15in; position: relative;
+    border-bottom: 1px solid var(--near-white); line-height: 1.5;
+  }
+  .custom-section-block .csb-body ul li:last-child { border-bottom: none; }
+  .custom-section-block .csb-body ul li::before {
+    content: ''; position: absolute; left: 0; top: 0.5em; width: 6px; height: 1px; background: var(--black);
+  }
+  .custom-section-block .csb-body p {
+    font-size: 7.5pt; font-weight: 300; color: var(--black); line-height: 1.65; margin-bottom: 0.08in;
+  }
+  .custom-split-display { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--light-grey); border: 1px solid var(--light-grey); margin-bottom: 0.14in; }
+  .custom-ai-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 6.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--black); margin-bottom: 0.14in; padding: 4px 10px;
+    border: 1px solid var(--light-grey); background: var(--near-white);
+  }
+
 </style>
 </head>
 <body>
@@ -570,6 +739,7 @@
           <option value="standard">Standard — 90/10 Split</option>
           <option value="coaching">Coaching Program — 70/30 Split</option>
           <option value="mds">MDS Development Sales Team</option>
+          <option value="custom">Custom Offer — AI Generated</option>
         </select>
       </div>
       <div class="error-msg" id="err-schedule">Please select a compensation structure</div>
@@ -625,6 +795,33 @@
     <div class="form-group">
       <label>Details / Terms</label>
       <textarea id="f-bonus-details" placeholder="Describe the bonus structure, amount, conditions, or any unique offer terms specific to this candidate..."></textarea>
+    </div>
+
+    <!-- CUSTOM OFFER FIELDS -->
+    <div id="custom-fields">
+      <div class="custom-ai-note">
+        <div class="cn-icon">✦</div>
+        <div class="cn-text">
+          <strong>AI-Powered Custom Offer</strong>
+          Upload previous role scopes, offer letters, or reference documents — then describe what you're looking to build. Claude will analyze your inputs and generate a fully formatted compensation schedule tailored to this candidate.
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Upload Reference Documents <span style="color:var(--black);font-weight:300;">(optional — PDF, images)</span></label>
+        <div class="custom-file-zone" onclick="document.getElementById('f-custom-files').click()">
+          <input type="file" id="f-custom-files" accept=".pdf,image/*,.txt" multiple onchange="handleCustomFiles(event)" onclick="event.stopPropagation()">
+          <div class="cfz-icon">⊕</div>
+          <div class="cfz-label">Upload Role Scopes &amp; Reference Docs</div>
+          <div class="cfz-sub">PDF, images, text files — drag or click</div>
+        </div>
+        <ul class="custom-file-list" id="custom-file-list"></ul>
+      </div>
+      <div class="form-section-divider">Offer Narrative &amp; Instructions <span class="req">*</span></div>
+      <div class="form-group">
+        <label>Describe the compensation package you want to build</label>
+        <textarea id="f-custom-narrative" rows="6" placeholder="e.g. 'This is a senior recruit coming from KW with $28M in prior year production. I want to offer a custom split starting at 85/15 for the first 6 months, stepping to 90/10 after. Include a $5,000 sign-on bonus paid at 90 days, and highlight the development sourcing opportunity since they have a background in new construction. Omit the referral bonus section.'"></textarea>
+        <div class="error-msg" id="err-narrative">Please describe the offer you want to build</div>
+      </div>
     </div>
 
     <!-- PREPARED BY -->
@@ -869,12 +1066,176 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("f-date").value = today;
 });
 
+
+// ─── CUSTOM FILE HANDLING ─────────────────────────────────────────────────────
+window._customFiles = [];
+
+function handleCustomFiles(e) {
+  Array.from(e.target.files).forEach(f => {
+    if (!window._customFiles.find(x => x.name === f.name)) window._customFiles.push(f);
+  });
+  renderCustomFileList();
+}
+
+function renderCustomFileList() {
+  const list = document.getElementById('custom-file-list');
+  if (!list) return;
+  list.innerHTML = window._customFiles.map((f, i) => {
+    const kb = (f.size / 1024).toFixed(0);
+    const name = f.name.length > 38 ? f.name.substring(0,36) + '…' : f.name;
+    return '<li><span><span class="cfl-name">' + name + '</span><span class="cfl-size"> ' + kb + 'KB</span></span><button class="cfl-remove" onclick="removeCustomFile(' + i + ')">✕</button></li>';
+  }).join('');
+}
+
+function removeCustomFile(idx) {
+  window._customFiles.splice(idx, 1);
+  renderCustomFileList();
+}
+
+function readFileAsB64(file) {
+  return new Promise(function(resolve) {
+    var r = new FileReader();
+    r.onload = function(e) { resolve({ name: file.name, type: file.type, data: e.target.result.split(',')[1] }); };
+    r.readAsDataURL(file);
+  });
+}
+
+// ─── CUSTOM AI OFFER GENERATOR ────────────────────────────────────────────────
+async function generateCustomOffer(agentName, teamName, narrative, headshotData, teambrandData, preparedBy, displayDate) {
+  var overlay = document.getElementById('gen-overlay');
+  var status = document.getElementById('gen-status');
+  overlay.classList.add('active');
+  try {
+    status.textContent = 'Reading your documents...';
+    var fileContents = await Promise.all(window._customFiles.map(readFileAsB64));
+    status.textContent = 'Generating with Claude AI...';
+    var contentParts = [];
+    fileContents.forEach(function(f) {
+      if (f.type === 'application/pdf') {
+        contentParts.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.data } });
+        contentParts.push({ type: 'text', text: '(Uploaded document: "' + f.name + '")' });
+      } else if (f.type.startsWith('image/')) {
+        contentParts.push({ type: 'image', source: { type: 'base64', media_type: f.type, data: f.data } });
+        contentParts.push({ type: 'text', text: '(Uploaded image: "' + f.name + '")' });
+      }
+    });
+    contentParts.push({ type: 'text', text: 'Generate a MODUS Real Estate custom compensation schedule.\n\nAgent: ' + agentName + (teamName ? ' | Team: ' + teamName : '') + '\nPrepared by: ' + preparedBy + '\n\nBroker instructions:\n"' + narrative + '"\n\n' + (fileContents.length > 0 ? fileContents.length + ' reference document(s) attached above.' : '') + '\n\nRespond with ONLY valid JSON (no markdown) in this exact format:\n{\n  "schedule_label": "Custom Offer",\n  "fee_band": [\n    { "amount": "XX%", "label": "To Agent", "note": "brief description" },\n    { "amount": "$X,000", "label": "Transaction Fee", "note": "brief description" }\n  ],\n  "note": "One-sentence overview of this package",\n  "sections": [\n    {\n      "title": "Compensation Structure",\n      "tag": "Custom Split",\n      "items": ["bullet point 1", "bullet point 2"],\n      "note": "optional paragraph"\n    }\n  ],\n  "misc": {\n    "policies": [{"key": "Policy", "val": "Description"}],\n    "no_fees": ["No File Fee", "No E&O Fee"]\n  }\n}\n\nRules: 2-3 fee_band cells, 3-6 sections (compensation, bonuses/incentives, development access, referral bonus if relevant, leases if relevant, MODUS Assist summary), keep bullets under 12 words each.' });
+
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: contentParts }] })
+    });
+    var data = await resp.json();
+    var raw = data.content && data.content[0] ? data.content[0].text : '{}';
+    raw = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
+    var offer = JSON.parse(raw);
+    overlay.classList.remove('active');
+    return offer;
+  } catch(err) {
+    overlay.classList.remove('active');
+    throw err;
+  }
+}
+
+function buildCustomDocHTML(offer, agentName, teamName, headshotData, teambrandData, preparedBy, displayDate, logoSrc) {
+  var fbClass = (offer.fee_band || []).length === 2 ? 'fee-band-2' : 'fee-band-3';
+  var feeCells = (offer.fee_band || []).map(function(f) {
+    return '<div class="fee-cell"><div class="amount">' + f.amount + '</div><div class="cadence">' + f.label + '</div><div class="note">' + f.note + '</div></div>';
+  }).join('<div class="fee-divider"></div>');
+
+  var agentCard = (headshotData || teambrandData) ?
+    '<div class="agent-card-with-photo">' + (headshotData ? '<img class="agent-headshot" src="' + headshotData + '" alt="' + agentName + '">' : '') + '<div class="agent-card-text"><span class="a-label">Prepared For</span><div class="a-name">' + agentName + '</div>' + (teamName ? '<div class="a-team">' + teamName + '</div>' : '') + (teambrandData ? '<img class="team-branding-img" src="' + teambrandData + '" alt="">' : '') + '</div></div>' :
+    '<div class="agent-card"><span class="a-label">Prepared For</span><div class="a-name">' + agentName + '</div>' + (teamName ? '<div class="a-team">' + teamName + '</div>' : '') + '</div>';
+
+  var sectionsHTML = (offer.sections || []).map(function(sec, i) {
+    var num = String(i + 1).padStart(2, '0');
+    var items = (sec.items || []).map(function(it) { return '<li>' + it + '</li>'; }).join('');
+    var noteHTML = sec.note ? '<p style="font-size:7.5pt;font-weight:300;color:var(--black);line-height:1.65;margin-top:0.1in;padding-top:0.08in;border-top:1px solid var(--light-grey);">' + sec.note + '</p>' : '';
+    return '<div class="section"><div class="section-eyebrow"><span class="section-num">' + num + '</span><div class="section-rule"></div></div><div class="section-title">' + sec.title + '</div>' + (sec.tag ? '<div class="section-sub">' + sec.tag + '</div>' : '') + '<div class="custom-section-block"><div class="vblock-body"><ul class="item-list">' + items + '</ul>' + noteHTML + '</div></div></div>';
+  }).join('');
+
+  var policies = (offer.misc && offer.misc.policies || []).map(function(p) { return '<div class="misc-row"><span class="mr-key">' + p.key + '</span><span class="mr-val">' + p.val + '</span></div>'; }).join('');
+  var noFees = (offer.misc && offer.misc.no_fees || []).map(function(f) { return '<div class="no-fee-item">' + f + '</div>'; }).join('');
+  var miscNum = String((offer.sections || []).length + 1).padStart(2, '0');
+  var miscHTML = (policies || noFees) ? '<div class="section"><div class="section-eyebrow"><span class="section-num">' + miscNum + '</span><div class="section-rule"></div></div><div class="section-title">Miscellaneous Terms</div><div class="section-sub">Additional policies &amp; what you will not pay at MODUS</div><div class="misc-grid"><div class="misc-block"><div class="mb-head">Additional Policies</div>' + policies + '</div><div class="misc-block"><div class="mb-head">Zero Additional Fees</div><div class="no-fee-set">' + noFees + '</div></div></div></div>' : '';
+
+  return '<div class="page"><div class="header"><div class="header-top"><img class="logo-img" src="' + logoSrc + '" alt="MODUS Real Estate"><div class="header-meta"><span class="label">Custom Offer</span><span class="value">AI-Generated Compensation Schedule</span><span class="value" style="margin-top:2px;font-size:7pt;">Prepared by ' + preparedBy + ' · ' + displayDate + '</span></div></div><div class="rule-white"></div><div class="header-bottom"><div class="doc-title"><span>' + (offer.schedule_label || 'Custom Offer') + '</span>Compensation<br>Schedule</div>' + agentCard + '</div></div><div class="fee-band ' + fbClass + '">' + feeCells + '</div>' + (offer.note ? '<div class="note-band"><span class="nb-tag">Overview</span><p>' + offer.note + '</p></div>' : '') + '<div class="body"><div class="section"><div class="section-eyebrow"><div class="section-rule"></div></div><div class="custom-ai-badge">✶ AI-Generated — Review before distributing</div></div>' + sectionsHTML + miscHTML + '</div><div class="footer"><div class="f-logo"><img src="' + logoSrc + '" alt="MODUS Real Estate"></div><div class="f-right">MODUS Real Estate · Custom Compensation Schedule<br>' + agentName + (teamName ? ' · ' + teamName : '') + ' · ' + displayDate + '</div></div></div>';
+}
+
+// ─── AI CHAT ──────────────────────────────────────────────────────────────────
+window._chatHistory = [];
+window._chatDocContext = '';
+
+function toggleChat() {
+  var panel = document.getElementById('ai-chat-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) setTimeout(function(){ document.getElementById('acp-input').focus(); }, 100);
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+function addChatMsg(role, text) {
+  window._chatHistory.push({ role: role, content: text });
+  var msgs = document.getElementById('acp-messages');
+  var div = document.createElement('div');
+  div.className = 'acp-msg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  var input = document.getElementById('acp-input');
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  document.getElementById('acp-send-btn').disabled = true;
+  addChatMsg('user', msg);
+  var msgs = document.getElementById('acp-messages');
+  var thinkEl = document.createElement('div');
+  thinkEl.className = 'acp-msg thinking';
+  thinkEl.textContent = 'Thinking...';
+  msgs.appendChild(thinkEl);
+  msgs.scrollTop = msgs.scrollHeight;
+  try {
+    var sys = 'You are the MODUS Real Estate compensation advisor, embedded in the internal comp schedule generator. Help brokers customize and understand agent compensation packages.\n\nCurrent document context: ' + (window._chatDocContext || 'No document generated yet.') + '\n\nMODUS standard structure: 10% agent support fee, $100/mo office fee, $1,000 buyer-side transaction fee. Coaching: 70/30 + $1,000 fee, then 85/15 On-Call, then 90/10. Be direct, strategic, specific. Under 150 words.';
+    var hist = window._chatHistory.slice(-10).map(function(m){ return { role: m.role, content: m.content }; });
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, system: sys, messages: hist })
+    });
+    var data = await resp.json();
+    var reply = data.content && data.content[0] ? data.content[0].text : 'Error getting response.';
+    thinkEl.remove();
+    addChatMsg('assistant', reply);
+  } catch(e) {
+    thinkEl.remove();
+    addChatMsg('assistant', 'Connection error — please try again.');
+  }
+  document.getElementById('acp-send-btn').disabled = false;
+}
+
+function updateChatContext(agentName, schedType, schedLabel) {
+  window._chatDocContext = 'Agent: ' + agentName + ' | Schedule: ' + schedLabel;
+  var ctx = document.getElementById('acp-context');
+  if (ctx) ctx.textContent = 'Context: ' + agentName + ' — ' + schedLabel;
+}
+
 function clearForm() {
   ["f-agent-name","f-team-name","f-bonus-title","f-bonus-details","f-project-name","f-units","f-price-low",
    "f-price-high","f-gross-comm","f-nci-share","f-member-share","f-prepared-by","f-date"]
     .forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
   document.getElementById("f-schedule-type").value = "";
   document.getElementById("mds-fields").classList.remove("visible");
+  document.getElementById("custom-fields").classList.remove("visible");
+  window._customFiles=[];
+  try{document.getElementById("custom-file-list").innerHTML="";}catch(e){}
+  try{document.getElementById("f-custom-files").value="";}catch(e){}
   document.querySelectorAll(".error-msg").forEach(e => e.classList.remove("show"));
   // clear uploads
   ['f-headshot','f-teambrand'].forEach(id => {
@@ -904,6 +1265,12 @@ function validate() {
     ["f-schedule-type","err-schedule"],
     ["f-prepared-by","err-prepared"],
   ];
+  // Custom offer validation
+  if (document.getElementById("f-schedule-type").value === "custom") {
+    const narr = document.getElementById("f-custom-narrative").value.trim();
+    if (!narr) { document.getElementById("err-narrative").classList.add("show"); ok = false; }
+    else { document.getElementById("err-narrative").classList.remove("show"); }
+  }
   checks.forEach(([fid, eid]) => {
     const val = document.getElementById(fid).value.trim();
     const err = document.getElementById(eid);
@@ -1103,6 +1470,7 @@ function generateDoc() {
   const preparedBy  = document.getElementById("f-prepared-by").value.trim();
   const headshotData  = uploadData.headshot;
   const teambrandData = uploadData.teambrand;
+  const customNarrative = document.getElementById("f-custom-narrative") ? document.getElementById("f-custom-narrative").value.trim() : "";
   const bonusTitle  = document.getElementById("f-bonus-title").value.trim();
   const bonusDetails = document.getElementById("f-bonus-details").value.trim();
   const dateVal     = document.getElementById("f-date").value;
@@ -1284,6 +1652,29 @@ function generateDoc() {
   </div>
 </div>`;
 
+  // ─── CUSTOM (AI-Generated) ────────────────────────────────────────────
+  } else if (schedType === "custom") {
+    // Will be handled async below — store params and return
+    (async () => {
+      try {
+        const offer = await generateCustomOffer(agentName, teamName, customNarrative, headshotData, teambrandData, preparedBy, displayDate);
+        html = buildCustomDocHTML(offer, agentName, teamName, headshotData, teambrandData, preparedBy, displayDate, WHITE_LOGO);
+        document.getElementById("doc-container").innerHTML = html;
+        document.getElementById("form-view").style.display = "none";
+        document.getElementById("doc-view").style.display = "block";
+        window.scrollTo(0, 0);
+        document.getElementById("tb-agent-name").textContent = agentName;
+        document.getElementById("tb-schedule-label").textContent = "Custom Offer — AI Generated";
+        buildBundleButtons("standard", agentName, teamName, "", "", "", "", "", "", "");
+        updateChatContext(agentName, "custom", "Custom Offer — AI Generated");
+        window._chatDocContext = "Agent: " + agentName + " | Schedule: Custom AI-Generated Offer | Narrative: " + customNarrative.substring(0,200);
+      } catch(err) {
+        alert("Error generating custom offer: " + err.message + "\n\nPlease check your narrative and try again.");
+      }
+    })();
+    return; // Exit synchronous generateDoc — async handler above takes over
+  }
+
   document.getElementById("doc-container").innerHTML = html;
   document.getElementById("form-view").style.display = "none";
   document.getElementById("doc-view").style.display = "block";
@@ -1298,9 +1689,40 @@ function generateDoc() {
   const _nci   = schedType === "mds" ? (document.getElementById("f-nci-share").value.trim() || "") : "";
   const _mem   = schedType === "mds" ? (document.getElementById("f-member-share").value.trim() || "") : "";
   buildBundleButtons(schedType, agentName, teamName, _pName, _units, _pLow, _pHigh, _gComm, _nci, _mem);
+  if (typeof updateChatContext === "function") updateChatContext(agentName, schedType, schedLabels[schedType]);
 }
 
 // date initialization handled in DOMContentLoaded above
 </script>
+
+<!-- GENERATING OVERLAY -->
+<div class="generating-overlay" id="gen-overlay">
+  <div class="gen-logo">MODUS<span>Real Estate</span></div>
+  <div class="gen-status" id="gen-status">Analyzing your inputs...</div>
+  <div class="gen-bar"></div>
+</div>
+
+<!-- AI CHAT BUBBLE -->
+<div id="ai-chat-bubble">
+  <div id="ai-chat-panel">
+    <div class="acp-header">
+      <div>
+        <div class="acp-title">MODUS AI Assistant</div>
+        <div class="acp-sub">Customize this comp schedule</div>
+      </div>
+      <button class="acp-close" onclick="toggleChat()">×</button>
+    </div>
+    <div class="acp-context-bar" id="acp-context">No document generated yet</div>
+    <div class="acp-messages" id="acp-messages">
+      <div class="acp-msg assistant">Hi — I'm your MODUS compensation assistant. Generate a schedule first, then ask me to refine it, explain sections, or suggest terms for this candidate.</div>
+    </div>
+    <div class="acp-input-row">
+      <textarea id="acp-input" placeholder="Ask me to adjust the offer, explain a term, or suggest language..." onkeydown="chatKeydown(event)"></textarea>
+      <button class="acp-send" id="acp-send-btn" onclick="sendChat()" title="Send">↑</button>
+    </div>
+  </div>
+  <button id="ai-chat-btn" onclick="toggleChat()" title="MODUS AI Assistant">✦</button>
+</div>
+
 </body>
 </html>
