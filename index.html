@@ -816,7 +816,14 @@
         </div>
         <ul class="custom-file-list" id="custom-file-list"></ul>
       </div>
-      <div class="form-section-divider">Offer Narrative &amp; Instructions <span class="req">*</span></div>
+      <div class="form-section-divider">Claude API Key <span class="req">*</span></div>
+      <div class="form-row">
+        <div class="form-group" style="width:100%">
+          <input type="password" id="f-api-key" placeholder="sk-ant-api03-..." style="width:100%;padding:8px 12px;background:var(--input-bg,#f5f5f5);border:1px solid var(--border,#ddd);border-radius:4px;font-size:13px;font-family:monospace" autocomplete="off" oninput="localStorage.setItem('modus_api_key',this.value)">
+          <div style="font-size:11px;color:#888;margin-top:4px">Saved to this browser automatically after first entry.</div>
+        </div>
+      </div>
+            <div class="form-section-divider">Offer Narrative &amp; Instructions <span class="req">*</span></div>
       <div class="form-group">
         <label>Describe the compensation package you want to build</label>
         <textarea id="f-custom-narrative" rows="6" placeholder="e.g. 'This is a senior recruit coming from KW with $28M in prior year production. I want to offer a custom split starting at 85/15 for the first 6 months, stepping to 90/10 after. Include a $5,000 sign-on bonus paid at 90 days, and highlight the development sourcing opportunity since they have a background in new construction. Omit the referral bonus section.'"></textarea>
@@ -1731,5 +1738,20 @@ function generateDoc() {
   <button id="ai-chat-btn" onclick="toggleChat()" title="MODUS AI Assistant">✦</button>
 </div>
 
+<script>
+(function(){
+  var k = localStorage.getItem('modus_api_key');
+  if (k) { var el = document.getElementById('f-api-key'); if (el) el.value = k; }
+  // Re-run after any schedule type change in case the field re-renders
+  var sel = document.getElementById('f-schedule-type');
+  if (sel) sel.addEventListener('change', function() {
+    setTimeout(function() {
+      var k2 = localStorage.getItem('modus_api_key');
+      var el2 = document.getElementById('f-api-key');
+      if (k2 && el2) el2.value = k2;
+    }, 100);
+  });
+})();
+</script>
 </body>
 </html>
