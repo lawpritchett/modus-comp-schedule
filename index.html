@@ -1473,6 +1473,27 @@ function generateDoc() {
   const customNarrative = document.getElementById("f-custom-narrative") ? document.getElementById("f-custom-narrative").value.trim() : "";
   const bonusTitle  = document.getElementById("f-bonus-title").value.trim();
   const bonusDetails = document.getElementById("f-bonus-details").value.trim();
+  if (schedType === "custom") {
+    (async () => {
+      try {
+        const offer = await generateCustomOffer(agentName, teamName, customNarrative, headshotData, teambrandData, preparedBy, displayDate);
+        const html = buildCustomDocHTML(offer, agentName, teamName, headshotData, teambrandData, preparedBy, displayDate, WHITE_LOGO);
+        document.getElementById("doc-container").innerHTML = html;
+        document.getElementById("form-view").style.display = "none";
+        document.getElementById("doc-view").style.display = "block";
+        window.scrollTo(0, 0);
+        document.getElementById("tb-agent-name").textContent = agentName;
+        document.getElementById("tb-schedule-label").textContent = "Custom Offer — AI Generated";
+        buildBundleButtons("standard", agentName, teamName, "", "", "", "", "", "", "");
+        if (typeof updateChatContext === "function") updateChatContext(agentName, "custom", "Custom Offer — AI Generated");
+      } catch(err) {
+        document.getElementById("gen-overlay").classList.remove("active");
+        alert("Error generating custom offer: " + err.message);
+      }
+    })();
+    return;
+  }
+
   const dateVal     = document.getElementById("f-date").value;
   const displayDate = fmtDate(dateVal);
 
@@ -1652,28 +1673,6 @@ function generateDoc() {
   </div>
 </div>`;
 
-  // ─── CUSTOM (AI-Generated) ────────────────────────────────────────────
-  } else if (schedType === "custom") {
-    // Will be handled async below — store params and return
-    (async () => {
-      try {
-        const offer = await generateCustomOffer(agentName, teamName, customNarrative, headshotData, teambrandData, preparedBy, displayDate);
-        html = buildCustomDocHTML(offer, agentName, teamName, headshotData, teambrandData, preparedBy, displayDate, WHITE_LOGO);
-        document.getElementById("doc-container").innerHTML = html;
-        document.getElementById("form-view").style.display = "none";
-        document.getElementById("doc-view").style.display = "block";
-        window.scrollTo(0, 0);
-        document.getElementById("tb-agent-name").textContent = agentName;
-        document.getElementById("tb-schedule-label").textContent = "Custom Offer — AI Generated";
-        buildBundleButtons("standard", agentName, teamName, "", "", "", "", "", "", "");
-        updateChatContext(agentName, "custom", "Custom Offer — AI Generated");
-        window._chatDocContext = "Agent: " + agentName + " | Schedule: Custom AI-Generated Offer | Narrative: " + customNarrative.substring(0,200);
-      } catch(err) {
-        alert("Error generating custom offer: " + err.message + "\n\nPlease check your narrative and try again.");
-      }
-    })();
-    return; // Exit synchronous generateDoc — async handler above takes over
-  }
 
   document.getElementById("doc-container").innerHTML = html;
   document.getElementById("form-view").style.display = "none";
