@@ -818,12 +818,7 @@
       </div>
       <div class="form-section-divider">Offer Narrative &amp; Instructions <span class="req">*</span></div>
       <div class="form-group">
-                <div class="form-group" style="margin-bottom:16px">
-          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Claude API Key</label>
-          <input type="password" id="f-api-key" placeholder="sk-ant-..." style="width:100%;padding:8px 12px;background:var(--s2);border:1px solid var(--bdr);border-radius:4px;color:var(--t);font-size:13px;font-family:monospace" autocomplete="off" oninput="localStorage.setItem('modus_api_key',this.value)">
-          <div style="font-size:10px;color:var(--t3);margin-top:4px">Saved to this browser — enter once, remembered automatically.</div>
-        </div>
-<label>Describe the compensation package you want to build</label>
+        <label>Describe the compensation package you want to build</label>
         <textarea id="f-custom-narrative" rows="6" placeholder="e.g. 'This is a senior recruit coming from KW with $28M in prior year production. I want to offer a custom split starting at 85/15 for the first 6 months, stepping to 90/10 after. Include a $5,000 sign-on bonus paid at 90 days, and highlight the development sourcing opportunity since they have a background in new construction. Omit the referral bonus section.'"></textarea>
         <div class="error-msg" id="err-narrative">Please describe the offer you want to build</div>
       </div>
@@ -1483,14 +1478,11 @@ function generateDoc() {
   const customNarrative = document.getElementById("f-custom-narrative") ? document.getElementById("f-custom-narrative").value.trim() : "";
   const bonusTitle  = document.getElementById("f-bonus-title").value.trim();
   const bonusDetails = document.getElementById("f-bonus-details").value.trim();
-  const dateVal     = document.getElementById("f-date").value;
-  const displayDate = fmtDate(dateVal);
-
   if (schedType === "custom") {
     (async () => {
       try {
-        const offer = await generateCustomOffer(agentName, teamName, customNarrative, headshotData, teambrandData, preparedBy, displayDate);
-        const html = buildCustomDocHTML(offer, agentName, teamName, headshotData, teambrandData, preparedBy, displayDate, WHITE_LOGO);
+        const offer = await generateCustomOffer(agentName, teamName, customNarrative, headshotData, teambrandData, preparedBy, fmtDate(document.getElementById("f-date").value));
+        const html = buildCustomDocHTML(offer, agentName, teamName, headshotData, teambrandData, preparedBy, fmtDate(document.getElementById("f-date").value), WHITE_LOGO);
         document.getElementById("doc-container").innerHTML = html;
         document.getElementById("form-view").style.display = "none";
         document.getElementById("doc-view").style.display = "block";
@@ -1506,6 +1498,9 @@ function generateDoc() {
     })();
     return;
   }
+
+  const dateVal     = document.getElementById("f-date").value;
+  const displayDate = fmtDate(dateVal);
 
   const schedLabels = {
     standard: "Standard — 90/10 Split",
@@ -1704,10 +1699,7 @@ function generateDoc() {
 // date initialization handled in DOMContentLoaded above
 
 // Auto-load saved API key
-(function() {
-  var k = localStorage.getItem('modus_api_key');
-  if (k) { var el = document.getElementById('f-api-key'); if (el) el.value = k; }
-})();
+(function(){var k=localStorage.getItem('modus_api_key');if(k){var el=document.getElementById('f-api-key');if(el)el.value=k;}})();
 </script>
 
 <!-- GENERATING OVERLAY -->
