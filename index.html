@@ -609,6 +609,20 @@
   }
   .acp-input-row .acp-send:hover { background: var(--dark-grey); }
   .acp-input-row .acp-send:disabled { opacity: 0.4; cursor: not-allowed; }
+  .acp-upload-btn {
+    display:flex;align-items:center;justify-content:center;
+    width:34px;flex-shrink:0;cursor:pointer;color:#999;
+    border-right:1px solid var(--light-grey,#e0e0e0);transition:color 0.15s;
+  }
+  .acp-upload-btn:hover { color:#c9a84c; }
+  .acp-pill {
+    display:inline-flex;align-items:center;gap:3px;
+    background:var(--s2,#f0f0f0);border:1px solid var(--border,#ddd);
+    border-radius:12px;padding:2px 6px;font-size:10px;color:var(--t,#333);
+  }
+  .acp-pill button { background:none;border:none;cursor:pointer;color:#999;padding:0;font-size:11px;line-height:1; }
+  .acp-pill button:hover { color:#c00; }
+  .acp-input-area { display:flex;flex-direction:column;border-top:1px solid var(--light-grey,#e0e0e0);flex-shrink:0; }
   #ai-chat-btn {
     width: 52px; height: 52px; border-radius: 50%;
     background: var(--black); border: none; cursor: pointer;
@@ -1187,12 +1201,11 @@ function toggleChat() {
   if (panel.classList.contains('open')) setTimeout(function(){ document.getElementById('acp-input').focus(); }, 200);
 }
 
-function addChatMsg(role, text, isHtml) {
+function addChatMsg(role, text) {
   var msgs = document.getElementById('acp-messages');
   var div = document.createElement('div');
   div.className = 'acp-msg ' + role;
-  if (isHtml) div.innerHTML = text;
-  else div.textContent = text;
+  div.textContent = text;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return div;
@@ -1202,38 +1215,26 @@ function executeAction(action) {
   if (!action || action.type === 'none') return;
   var doc = document.getElementById('doc-view');
   if (!doc) return;
-
   if (action.type === 'delete_section') {
     var sections = doc.querySelectorAll('.section');
-    if (action.index && sections[action.index - 1]) {
-      sections[action.index - 1].remove();
-    } else if (action.selector) {
-      var el = doc.querySelector(action.selector);
-      if (el) el.remove();
-    }
-
+    if (action.index && sections[action.index - 1]) sections[action.index - 1].remove();
+    else if (action.selector) { var el = doc.querySelector(action.selector); if (el) el.remove(); }
   } else if (action.type === 'update_text') {
-    if (action.selector) {
-      var el = doc.querySelector(action.selector);
-      if (el) el.innerHTML = action.html || action.text || el.innerHTML;
-    } else if (action.find) {
+    if (action.selector) { var el2 = doc.querySelector(action.selector); if (el2) el2.innerHTML = action.html || action.text || el2.innerHTML; }
+    else if (action.find) {
       var walker = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT);
       var node;
       while ((node = walker.nextNode())) {
-        if (node.textContent.includes(action.find)) {
-          node.textContent = node.textContent.replace(action.find, action.replace || '');
-        }
+        if (node.textContent.includes(action.find)) node.textContent = node.textContent.replace(action.find, action.replace || '');
       }
     }
-
   } else if (action.type === 'update_style') {
     var els = action.selector ? doc.querySelectorAll(action.selector) : [];
-    els.forEach(function(el) {
-      if (action.css) Object.assign(el.style, action.css);
-      if (action.addClass) el.classList.add(action.addClass);
-      if (action.removeClass) el.classList.remove(action.removeClass);
+    els.forEach(function(el3) {
+      if (action.css) Object.assign(el3.style, action.css);
+      if (action.addClass) el3.classList.add(action.addClass);
+      if (action.removeClass) el3.classList.remove(action.removeClass);
     });
-
   } else if (action.type === 'insert_html') {
     var target = action.selector ? doc.querySelector(action.selector) : null;
     var tmp = document.createElement('div');
@@ -1244,78 +1245,54 @@ function executeAction(action) {
       else if (action.position === 'after') target.parentNode.insertBefore(newEl, target.nextSibling);
       else if (action.position === 'inside_start') target.insertBefore(newEl, target.firstChild);
       else target.appendChild(newEl);
-    } else if (newEl) {
-      doc.appendChild(newEl);
-    }
-
+    } else if (newEl) { doc.appendChild(newEl); }
   } else if (action.type === 'add_chart') {
     var chartHtml = buildBarChart(action.data || [], action.title || 'Chart');
-    var target = action.after_selector ? doc.querySelector(action.after_selector) : null;
+    var target2 = action.after_selector ? doc.querySelector(action.after_selector) : null;
     var tmp2 = document.createElement('div');
     tmp2.innerHTML = chartHtml;
     var chart = tmp2.firstElementChild;
-    if (target) target.parentNode.insertBefore(chart, target.nextSibling);
-    else doc.appendChild(chart);
-
+    if (target2 && chart) target2.parentNode.insertBefore(chart, target2.nextSibling);
+    else if (chart) doc.appendChild(chart);
   } else if (action.type === 'add_callout') {
-    var calloutHtml = '<div style="border-left:3px solid #c9a84c;background:rgba(201,168,76,0.08);padding:0.12in 0.16in;margin:0.12in 0;border-radius:0 4px 4px 0">'
-      + '<div style="font-size:8pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#c9a84c;margin-bottom:4px">' + (action.label || 'NOTE') + '</div>'
-      + '<div style="font-size:9pt;line-height:1.5">' + (action.text || '') + '</div></div>';
+    var calloutHtml = '<div style="border-left:3px solid #c9a84c;background:rgba(201,168,76,0.08);padding:0.12in 0.16in;margin:0.1in 0;border-radius:0 4px 4px 0"><div style="font-size:8.5pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#c9a84c;margin-bottom:4px">' + (action.label || 'NOTE') + '</div><div style="font-size:9pt;line-height:1.5">' + (action.text || '') + '</div></div>';
     var target3 = action.after_selector ? doc.querySelector(action.after_selector) : null;
-    var tmp3 = document.createElement('div');
-    tmp3.innerHTML = calloutHtml;
+    var tmp3 = document.createElement('div'); tmp3.innerHTML = calloutHtml;
     var callout = tmp3.firstElementChild;
-    if (target3) target3.parentNode.insertBefore(callout, target3.nextSibling);
-    else doc.appendChild(callout);
-
+    if (target3 && callout) target3.parentNode.insertBefore(callout, target3.nextSibling);
+    else if (callout) doc.appendChild(callout);
   } else if (action.type === 'highlight_section') {
     var secs = doc.querySelectorAll('.section');
     var idx = (action.index || 1) - 1;
-    if (secs[idx]) {
-      secs[idx].style.outline = action.outline || '2px solid #c9a84c';
-      secs[idx].style.outlineOffset = '6px';
-      secs[idx].style.borderRadius = '3px';
-    }
-
-  } else if (action.type === 'remove_highlight') {
-    var secs2 = doc.querySelectorAll('.section');
-    secs2.forEach(function(s){ s.style.outline = ''; s.style.outlineOffset = ''; });
-
+    if (secs[idx]) { secs[idx].style.outline = action.outline || '2px solid #c9a84c'; secs[idx].style.outlineOffset = '4px'; }
   } else if (action.type === 'reorder_sections') {
-    var secs3 = Array.from(doc.querySelectorAll('.section'));
-    var parent = secs3[0] && secs3[0].parentNode;
-    if (!parent || !action.from || !action.to) return;
-    var moved = secs3[action.from - 1];
-    var ref = secs3[action.to - 1];
-    if (moved && ref) parent.insertBefore(moved, action.to < action.from ? ref : ref.nextSibling);
+    var secs2 = Array.from(doc.querySelectorAll('.section'));
+    if (!secs2.length || !action.from || !action.to) return;
+    var parent = secs2[0].parentNode;
+    var moved = secs2[action.from - 1];
+    var ref = secs2[action.to - 1];
+    if (moved && ref && parent) parent.insertBefore(moved, action.to < action.from ? ref : ref.nextSibling);
   }
 }
 
 function buildBarChart(data, title) {
-  if (!data || !data.length) return '<div style="padding:8px;color:#888;font-size:8pt">No chart data</div>';
-  var values = data.map(function(d){ return parseFloat(d.value) || 0; });
-  var max = Math.max.apply(null, values) || 1;
-  var W = 400, H = 160, padL = 36, padB = 30, padT = 24, padR = 16;
-  var innerW = W - padL - padR;
-  var innerH = H - padB - padT;
-  var barW = Math.floor(innerW / data.length * 0.55);
-  var gap = Math.floor(innerW / data.length);
-  var colors = ['#c9a84c','#1a1a1a','#888888','#b8963e','#555555'];
-  var bars = data.map(function(d, i) {
-    var val = parseFloat(d.value) || 0;
-    var bh = Math.max(2, Math.floor((val / max) * innerH));
-    var x = padL + i * gap + (gap - barW) / 2;
-    var y = padT + innerH - bh;
-    var col = colors[i % colors.length];
-    return '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + bh + '" fill="' + col + '" rx="2"/>'
-      + '<text x="' + (x + barW / 2) + '" y="' + (y - 4) + '" text-anchor="middle" font-size="9" fill="currentColor">' + d.value + '</text>'
-      + '<text x="' + (x + barW / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="8" fill="#888">' + (d.label || '') + '</text>';
+  if (!data || !data.length) return '';
+  var max = Math.max.apply(null, data.map(function(d){ return parseFloat(d.value)||0; }));
+  if (max === 0) max = 1;
+  var W=420, H=160, pad=40, gap=Math.floor((W-pad*2)/data.length), barW=Math.floor(gap*0.6);
+  var colors=['#c9a84c','#2a2a2a','#888','#c9a84c','#555'];
+  var bars = data.map(function(d,i){
+    var val=parseFloat(d.value)||0, bh=Math.floor((val/max)*(H-50));
+    var x=pad+i*gap+(gap-barW)/2, y=H-30-bh, col=colors[i%colors.length];
+    return '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+bh+'" fill="'+col+'" rx="2"/>'
+      +'<text x="'+(x+barW/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="8" fill="currentColor">'+d.value+'</text>'
+      +'<text x="'+(x+barW/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="7.5" fill="#888">'+(d.label||'')+'</text>';
   }).join('');
-  return '<div style="margin:0.15in 0;padding:0.1in 0.12in;background:rgba(0,0,0,0.03);border-radius:6px;border:1px solid rgba(0,0,0,0.08)">'
-    + '<div style="font-size:8pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#888;margin-bottom:6px">' + title + '</div>'
-    + '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;max-width:' + W + 'px">'
-    + '<line x1="' + padL + '" y1="' + (H - padB) + '" x2="' + (W - padR) + '" y2="' + (H - padB) + '" stroke="#ddd" stroke-width="1"/>'
-    + bars + '</svg></div>';
+  return '<div style="margin:0.12in 0;padding:0.1in;background:var(--s2,#f5f5f5);border-radius:6px">'
+    +'<div style="font-size:8pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#888;margin-bottom:6px">'+title+'</div>'
+    +'<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:'+W+'px;display:block">'
+    +'<line x1="'+pad+'" y1="'+(H-30)+'" x2="'+(W-pad)+'" y2="'+(H-30)+'" stroke="#ccc" stroke-width="1"/>'
+    +bars+'</svg></div>';
 }
 
 function handleChatFileSelect(files) {
@@ -1323,36 +1300,29 @@ function handleChatFileSelect(files) {
     var reader = new FileReader();
     reader.onload = function(e) {
       var att = { name: file.name, type: file.type, size: file.size };
-      if (file.type && file.type.startsWith('image/')) {
-        att.data = e.target.result;
-        att.kind = 'image';
-      } else {
-        att.text = e.target.result;
-        att.kind = 'text';
-      }
-      window._chatAttachments = window._chatAttachments || [];
+      if (file.type.startsWith('image/')) { att.data = e.target.result; att.kind = 'image'; }
+      else { att.text = e.target.result; att.kind = 'text'; }
       window._chatAttachments.push(att);
-      renderAttachmentPill(att);
+      var bar = document.getElementById('acp-attach-bar');
+      if (bar) {
+        bar.style.display = 'flex';
+        var pill = document.createElement('div');
+        pill.className = 'acp-pill';
+        pill.dataset.name = file.name;
+        pill.innerHTML = '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px">'+file.name+'</span><button onclick="removeAttachment(this.parentNode)">&times;</button>';
+        bar.appendChild(pill);
+      }
     };
-    if (file.type && file.type.startsWith('image/')) reader.readAsDataURL(file);
+    if (file.type.startsWith('image/')) reader.readAsDataURL(file);
     else reader.readAsText(file);
   });
 }
 
-function renderAttachmentPill(att) {
-  var bar = document.getElementById('acp-attach-bar');
-  if (!bar) return;
-  bar.style.display = 'flex';
-  var pill = document.createElement('div');
-  pill.className = 'acp-pill';
-  pill.innerHTML = '<span style="font-size:10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + att.name + '</span>'
-    + '<button onclick="removeAttachment('' + att.name.replace(/'/g,"\'") + '',this.parentNode)" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;font-size:11px;opacity:.6">&times;</button>';
-  bar.appendChild(pill);
-}
-
-function removeAttachment(name, pill) {
-  window._chatAttachments = (window._chatAttachments || []).filter(function(a){ return a.name !== name; });
-  if (pill) pill.remove();
+function removeAttachment(pill) {
+  if (!pill) return;
+  var name = pill.dataset.name;
+  window._chatAttachments = window._chatAttachments.filter(function(a){ return a.name !== name; });
+  pill.remove();
   var bar = document.getElementById('acp-attach-bar');
   if (bar && !bar.children.length) bar.style.display = 'none';
 }
@@ -1360,134 +1330,97 @@ function removeAttachment(name, pill) {
 async function sendAcp() {
   var input = document.getElementById('acp-input');
   var msg = input.value.trim();
-  var attachments = window._chatAttachments || [];
-  if (!msg && !attachments.length) return;
+  if (!msg && !window._chatAttachments.length) return;
   if (!msg) msg = '(See attached file)';
-
   document.getElementById('acp-send-btn').disabled = true;
   addChatMsg('user', msg);
   input.value = '';
   input.style.height = 'auto';
-
   var bar = document.getElementById('acp-attach-bar');
   if (bar) { bar.innerHTML = ''; bar.style.display = 'none'; }
 
   var contentParts = [];
-  attachments.forEach(function(att) {
+  window._chatAttachments.forEach(function(att) {
     if (att.kind === 'image') {
       var b64 = att.data.split(',')[1];
-      contentParts.push({ type: 'image', source: { type: 'base64', media_type: att.type, data: b64 } });
-      contentParts.push({ type: 'text', text: '(Attached image: "' + att.name + '")' });
+      contentParts.push({ type: 'image', source: { type: 'base64', media_type: att.type||'image/png', data: b64 } });
+      contentParts.push({ type: 'text', text: '(Attached image: "'+att.name+'")' });
     } else {
-      contentParts.push({ type: 'text', text: 'Attached file "' + att.name + '":\n' + (att.text || '').substring(0, 6000) });
+      contentParts.push({ type: 'text', text: 'Attached file "'+att.name+'":\n'+(att.text||'').substring(0,8000) });
     }
   });
   window._chatAttachments = [];
   contentParts.push({ type: 'text', text: msg });
+  window._chatHistory.push({ role: 'user', content: contentParts.length === 1 ? msg : contentParts });
 
-  var userContent = contentParts.length === 1 ? msg : contentParts;
-  window._chatHistory = window._chatHistory || [];
-  window._chatHistory.push({ role: 'user', content: userContent });
-
-  var sections = Array.from(document.querySelectorAll('#doc-view .section')).map(function(s, i) {
-    var titleEl = s.querySelector('.section-title');
-    return (i + 1) + '. ' + (titleEl ? titleEl.textContent.trim() : 'Section ' + (i + 1));
+  var sections = Array.from(document.querySelectorAll('#doc-view .section')).map(function(s,i){
+    return (i+1)+'. '+(s.querySelector('.section-title')?s.querySelector('.section-title').textContent.trim():'Section '+(i+1));
   });
-  var docExists = document.getElementById('doc-view') && document.getElementById('doc-view').style.display === 'block';
+  var feeBand = Array.from(document.querySelectorAll('#doc-view .fee-cell')).map(function(c){ return c.textContent.trim().replace(/\s+/g,' '); }).join(' | ');
+  var sys = 'You are the MODUS AI Assistant — an expert real estate compensation advisor. You can answer questions AND directly edit the live compensation document.\n\n'
+    +'CURRENT DOCUMENT SECTIONS:\n'+(sections.length ? sections.join('\n') : 'No document generated yet.')+'\n\n'
+    +(feeBand ? 'FEE BAND: '+feeBand+'\n\n' : '')
+    +'CAPABILITIES:\n'
+    +'- Edit live document: delete sections, change text, add charts/callouts, highlight sections, reorder sections\n'
+    +'- Analyze uploaded images, PDFs, and text files\n'
+    +'- Answer any compensation, split, fee, or agreement question\n\n'
+    +'RESPONSE FORMAT — always return ONLY a JSON object (no markdown fences):\n'
+    +'{ "message": "your reply shown to user", "action": { "type": "...", ...fields } }\n\n'
+    +'ACTION TYPES & SCHEMAS:\n'
+    +'delete_section: { "type":"delete_section", "index":N }  — N is 1-based section number\n'
+    +'update_text: { "type":"update_text", "find":"text to find", "replace":"replacement" }\n'
+    +'update_style: { "type":"update_style", "selector":"css selector", "css":{"property":"value"} }\n'
+    +'insert_html: { "type":"insert_html", "selector":"css selector", "position":"after|before|inside_start", "html":"<div>...</div>" }\n'
+    +'add_chart: { "type":"add_chart", "after_selector":"css selector", "title":"Chart Title", "data":[{"label":"X","value":"Y"},...] }\n'
+    +'add_callout: { "type":"add_callout", "after_selector":"css selector", "label":"NOTE", "text":"callout content" }\n'
+    +'highlight_section: { "type":"highlight_section", "index":N }\n'
+    +'reorder_sections: { "type":"reorder_sections", "from":N, "to":N }\n'
+    +'none: { "type":"none" }  — use for conversational replies with no doc change\n\n'
+    +'NOTES:\n'
+    +'- CSS selectors operate on #doc-view. Common selectors: .section (all sections), .fee-band (fee table), .section-title\n'
+    +'- Sections are numbered 1-based in order of appearance in the document\n'
+    +'- If no document exists yet, set action.type to "none" and tell user to generate first\n'
+    +(window._chatDocContext ? 'AGENT CONTEXT: '+window._chatDocContext : '');
 
-  var sys = 'You are the MODUS AI Assistant — an expert real estate compensation advisor embedded in the MODUS Compensation Schedule Generator. '
-    + 'You can answer questions AND directly edit the live compensation document.\n\n'
-    + 'CURRENT DOCUMENT:\n'
-    + (docExists && sections.length ? 'Sections:\n' + sections.join('\n') : 'No document generated yet — user must generate a schedule first.')
-    + (window._chatDocContext ? '\n\n' + window._chatDocContext : '') + '\n\n'
-    + 'WHAT YOU CAN DO:\n'
-    + '- Delete a section: tell me "delete section 2" or "remove the obligations section"\n'
-    + '- Add a chart: "add a bar chart comparing splits"\n'
-    + '- Highlight a section: "highlight section 3 with an outline"\n'
-    + '- Add a callout/note box: "add a note after section 1 about the review period"\n'
-    + '- Change text: "change the 90/10 split to 88/12 throughout"\n'
-    + '- Insert content: "add a referral fee section after section 2"\n'
-    + '- Reorder: "move section 3 before section 1"\n'
-    + '- Answer questions about compensation structures, fees, agreements, market norms\n'
-    + '- Analyze uploaded documents, contracts, or images\n\n'
-    + 'RESPONSE FORMAT — always respond with a JSON object, no markdown fences:\n'
-    + '{ "message": "your reply to the user", "action": { "type": "...", ...fields } }\n\n'
-    + 'ACTION TYPES:\n'
-    + 'none — conversational reply only: { "type": "none" }\n'
-    + 'delete_section — { "type": "delete_section", "index": 2 }\n'
-    + 'update_text — { "type": "update_text", "find": "old text", "replace": "new text" }\n'
-    + 'update_style — { "type": "update_style", "selector": ".section-title", "css": { "color": "#c9a84c" } }\n'
-    + 'insert_html — { "type": "insert_html", "selector": ".section:nth-child(2)", "position": "after", "html": "<div>...</div>" }\n'
-    + 'add_chart — { "type": "add_chart", "after_selector": ".fee-band", "title": "Split Comparison", "data": [{"label":"Agent","value":"85%"},{"label":"MODUS","value":"15%"}] }\n'
-    + 'add_callout — { "type": "add_callout", "after_selector": ".section:nth-child(1)", "label": "NOTE", "text": "..." }\n'
-    + 'highlight_section — { "type": "highlight_section", "index": 2 }\n'
-    + 'remove_highlight — { "type": "remove_highlight" }\n'
-    + 'reorder_sections — { "type": "reorder_sections", "from": 3, "to": 1 }\n\n'
-    + 'If no document exists, set action type to "none" and ask the user to generate a schedule first.\n'
-    + 'Keep message replies concise — 1-3 sentences max unless explaining something complex.';
-
-  var thinkEl = addChatMsg('assistant', '...', false);
-
+  var thinkEl = addChatMsg('assistant', '...');
+  var hist = window._chatHistory.slice(-14);
+  var resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': (document.getElementById('f-api-key') ? document.getElementById('f-api-key').value.trim() : ''),
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: sys, messages: hist })
+  });
   try {
-    var apiKey = document.getElementById('f-api-key') ? document.getElementById('f-api-key').value.trim() : '';
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: sys,
-        messages: (window._chatHistory || []).slice(-14)
-      })
-    });
-
     var data = await resp.json();
-    if (!resp.ok) throw new Error(data.error ? data.error.message : 'API error ' + resp.status);
-
+    if (!resp.ok) throw new Error((data.error && data.error.message) || 'API error '+resp.status);
     var raw = data.content && data.content[0] ? data.content[0].text : null;
-    if (!raw) throw new Error('Empty response from API');
-
+    if (!raw) throw new Error('Empty response');
     var parsed;
-    try {
-      raw = raw.replace(/^```json
-?/, '').replace(/
-?```$/, '').trim();
-      parsed = JSON.parse(raw);
-    } catch(e) {
-      parsed = { message: raw, action: { type: 'none' } };
-    }
-
-    var replyMsg = parsed.message || 'Done.';
-    thinkEl.textContent = replyMsg;
-
+    try { parsed = JSON.parse(raw.replace(/^```json\n?/,'').replace(/\n?```$/,'').trim()); }
+    catch(e) { parsed = { message: raw, action: { type: 'none' } }; }
+    thinkEl.textContent = parsed.message || 'Done.';
     if (parsed.action && parsed.action.type !== 'none') {
       try {
         executeAction(parsed.action);
         var tick = document.createElement('span');
-        tick.style.cssText = 'color:#c9a84c;font-size:10px;margin-left:6px;opacity:.8';
-        tick.textContent = '\u2713 Applied';
+        tick.style.cssText = 'color:#c9a84c;font-size:9px;margin-left:5px;opacity:0.8';
+        tick.textContent = '\u2713 applied';
         thinkEl.appendChild(tick);
-      } catch(ae) {
-        console.warn('Action execution failed:', ae);
-      }
+      } catch(ae) { console.warn('Action failed:', ae.message); }
     }
-
-    window._chatHistory.push({ role: 'assistant', content: replyMsg });
-
+    window._chatHistory.push({ role: 'assistant', content: parsed.message || '' });
   } catch(e) {
     thinkEl.textContent = 'Error: ' + e.message;
   }
-
   document.getElementById('acp-send-btn').disabled = false;
 }
 
 function updateChatContext(agentName, schedType, schedLabel) {
-  window._chatDocContext = 'Agent: ' + (agentName || '') + ' | Schedule type: ' + (schedLabel || schedType || '');
+  window._chatDocContext = 'Agent: '+agentName+' | Schedule: '+schedLabel+' ('+schedType+')';
 }
 
 function clearForm() {
@@ -1971,17 +1904,17 @@ function generateDoc() {
     <div class="acp-header">
       <div>
         <div class="acp-title">MODUS AI Assistant</div>
-        <div class="acp-sub">Edit &middot; Design &middot; Ask anything</div>
+        <div class="acp-sub">Edit document, ask questions, upload files</div>
       </div>
       <button class="acp-close" onclick="toggleChat()">&#x2715;</button>
     </div>
     <div id="acp-messages">
-      <div class="acp-msg assistant">Hi &#x2014; I&#x2019;m your MODUS compensation assistant. Generate a schedule, then tell me what to change: delete sections, add charts, tweak splits, highlight callouts &#x2014; or upload a file for context.</div>
+      <div class="acp-msg assistant">Hi &#x2014; I&#x2019;m your MODUS assistant. Generate a schedule first, then tell me what to change: delete sections, add charts, tweak splits, highlight callouts, reorder sections. You can also upload images, PDFs, or docs for me to reference.</div>
     </div>
     <div class="acp-input-area">
-      <div id="acp-attach-bar" style="display:none;flex-wrap:wrap;gap:4px;padding:6px 10px 0;border-top:1px solid rgba(255,255,255,0.08)"></div>
+      <div id="acp-attach-bar" style="display:none;flex-wrap:wrap;gap:4px;padding:6px 8px 0 8px"></div>
       <div class="acp-input-row">
-        <label class="acp-upload-btn" title="Attach image, PDF, or text file" style="display:flex;align-items:center;justify-content:center;width:32px;flex-shrink:0;cursor:pointer;opacity:.55;transition:opacity .15s" onmouseenter="this.style.opacity=1" onmouseleave="this.style.opacity='.55'">
+        <label class="acp-upload-btn" title="Attach file or image">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           <input type="file" id="acp-file-input" multiple accept="image/*,.pdf,.txt,.doc,.docx,.csv,.md" style="display:none" onchange="handleChatFileSelect(this.files);this.value=''">
         </label>
