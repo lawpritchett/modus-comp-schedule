@@ -1128,12 +1128,12 @@ async function generateCustomOffer(agentName, teamName, narrative, headshotData,
     });
     contentParts.push({ type: 'text', text: 'You are a compensation document generator for MODUS Real Estate. Generate a custom agent compensation schedule based on the broker instructions below.\n\nAgent: ' + agentName + (teamName ? ' | Team: ' + teamName : '') + '\nPrepared by: ' + preparedBy + '\n\nBroker instructions:\n"' + narrative + '"\n\n' + (fileContents.length > 0 ? fileContents.length + ' reference document(s) attached above.\n\n' : '') + 'Respond ONLY with a single valid JSON object. No markdown, no code fences, no explanation — raw JSON only.\n\nThe JSON must match this EXACT structure:\n{\n  "schedule_label": "string — short name for this offer type, e.g. \'Senior Agent — 85/15\'",\n  "note": "string — one sentence overview of the package",\n  "fee_band": [\n    { "label": "string", "amount": "string", "note": "string" },\n    { "label": "string", "amount": "string", "note": "string" },\n    { "label": "string", "amount": "string", "note": "string" }\n  ],\n  "sections": [\n    {\n      "title": "string — section heading",\n      "items": ["bullet point 1", "bullet point 2", "bullet point 3"],\n      "note": "optional paragraph of additional context, or empty string"\n    }\n  ],\n  "misc": {\n    "policies": [\n      { "key": "string — policy name", "val": "string — policy value" }\n    ]\n  }\n}\n\nRules:\n- fee_band must have 2 or 3 items. Each item needs label (e.g. "To Agent"), amount (e.g. "85%"), and note (e.g. "of gross commission").\n- sections must have 2 to 5 entries covering: compensation structure, key benefits, obligations/expectations, and any other relevant terms.\n- Each section must have at least 2 items (bullet points as plain strings).\n- misc.policies should list 3-6 key policy items (agreement type, cap structure, review periods, etc).\n- All values must be strings. No nulls, no nested objects beyond this schema.\n- Output ONLY the JSON object, nothing else.' })
     
+    var thinkEl = { remove: function() {} };
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, system: sys, messages: hist })
     });
-    var thinkEl = { remove: function() {} };
     var data = await resp.json();
     var reply = data.content && data.content[0] ? data.content[0].text : 'Error getting response.';
     thinkEl.remove();
