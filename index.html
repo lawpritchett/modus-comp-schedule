@@ -1217,7 +1217,12 @@ async function sendChat() {
     var hist = window._chatHistory.slice(-10).map(function(m){ return { role: m.role, content: m.content }; });
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': (document.getElementById('f-api-key') ? document.getElementById('f-api-key').value.trim() : ''),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, system: sys, messages: hist })
     });
     var data = await resp.json();
