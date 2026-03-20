@@ -561,12 +561,14 @@
   #ai-chat-panel {
     width: 360px;
     height: 520px;
+    max-height: 80vh;
     background: var(--white);
     border: 1px solid var(--light-grey);
     box-shadow: 0 8px 40px rgba(0,0,0,0.18);
     display: none;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
   }
   #ai-chat-panel.open { display: flex; }
   .acp-header {
@@ -582,17 +584,15 @@
   .acp-pill { display:inline-flex;align-items:center;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2px 8px;font-size:10px;color:inherit;gap:2px; }
   .acp-header .acp-close:hover { color: var(--white); }
   .acp-messages {
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding: 0.14in;
+    padding: 0.12in 0.14in;
     display: flex;
     flex-direction: column;
-    gap: 0.1in;
-    height: 320px;
-    max-height: 320px;
-    min-height: 0;
+    gap: 8px;
   }
   .acp-msg {
     max-width: 88%; padding: 0.09in 0.13in;
