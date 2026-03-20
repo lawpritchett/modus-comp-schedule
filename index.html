@@ -1133,6 +1133,7 @@ async function generateCustomOffer(agentName, teamName, narrative, headshotData,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, system: sys, messages: hist })
     });
+    var thinkEl = { remove: function() {} };
     var data = await resp.json();
     var reply = data.content && data.content[0] ? data.content[0].text : 'Error getting response.';
     thinkEl.remove();
