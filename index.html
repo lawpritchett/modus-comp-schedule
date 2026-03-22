@@ -11,7 +11,7 @@
 /* ============================================================
    BASE
 ============================================================ */
-:root {
+:root 
   --black:    #0A0A0A;
   --dark:     #1A1A1A;
   --charcoal: #3C3C3C;
@@ -2104,13 +2104,10 @@ When drafting offer language:
 - When appropriate, offer to fill in the Bonus Offering section with the exact language you draft`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://modus-anthropic-proxy.lawrence-768.workers.dev', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': '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',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
